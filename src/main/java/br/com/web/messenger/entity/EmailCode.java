@@ -13,7 +13,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "email_codes")
-public class EmailCodes {
+public class EmailCode {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,7 +34,7 @@ public class EmailCodes {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    public EmailCodes() {
+    public EmailCode() {
     }
 
     public Long getId() {
