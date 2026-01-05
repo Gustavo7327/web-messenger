@@ -98,10 +98,29 @@ public class Group {
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
-
+    
     public void addMember(User user, GroupRole role) {
+        boolean exists = members.stream().anyMatch(m -> m.getUser() != null && m.getUser().equals(user));
+        if (exists) return;
         GroupMember member = new GroupMember(this, user, role);
+        member.setGroup(this);
+        member.setUser(user);
         members.add(member);
+    }
+
+    public void removeMember(User user) {
+        GroupMember toRemove = null;
+        for (GroupMember gm : members) {
+            if (gm.getUser() != null && gm.getUser().equals(user)) {
+                toRemove = gm;
+                break;
+            }
+        }
+        if (toRemove != null) {
+            members.remove(toRemove);
+            toRemove.setGroup(null);
+            toRemove.setUser(null);
+        }
     }
     
 }
