@@ -43,9 +43,9 @@ public class User {
     private String photoUrl;
 
     @Nullable
-    private boolean emailVerified;
+    private Boolean emailVerified;
  
-    private boolean active = true;
+    private Boolean active = true;
 
     @ElementCollection
     private List<String> profileLinks = new ArrayList<>();
@@ -105,7 +105,7 @@ public class User {
         this.photoUrl = photoUrl;
     }
 
-    public boolean isEmailVerified() {
+    public Boolean isEmailVerified() {
         return emailVerified;
     }
 
@@ -113,7 +113,7 @@ public class User {
         this.emailVerified = emailVerified;
     }
 
-    public boolean isActive() {
+    public Boolean isActive() {
         return active;
     }
 
