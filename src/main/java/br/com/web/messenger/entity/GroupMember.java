@@ -34,7 +34,6 @@ public class GroupMember {
         this.group = group;
         this.user = user;
         this.role = role;
-        this.id = new GroupMemberId(group.getId(), user.getId());
     }
 
     public GroupMemberId getId() { return id; }
