@@ -5,9 +5,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import br.com.web.messenger.dto.user.UserRegister;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
@@ -55,6 +58,12 @@ public class User {
 
 
     public User() {
+    }
+
+    public User(UserRegister dto, BCryptPasswordEncoder passwordEncoder) {
+        this.name = dto.name();
+        this.email = dto.email();
+        this.password = passwordEncoder.encode(dto.password());
     }
 
     public Long getId() {
@@ -131,6 +140,10 @@ public class User {
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
+    }
+
+    public boolean isCorrectPassword(String rawPassword, PasswordEncoder passwordEncoder){
+        return passwordEncoder.matches(rawPassword, this.password);
     }
 
 }
