@@ -30,7 +30,6 @@ public class EmailCode {
 
     private String type;
 
-    @CreationTimestamp
     private LocalDateTime expiresAt;
 
     @CreationTimestamp
@@ -83,8 +82,20 @@ public class EmailCode {
         return expiresAt;
     }
 
+    public void setExpiresAt(LocalDateTime expiresAt) {
+        this.expiresAt = expiresAt;
+    }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
+    }
+    
+    public EmailCode(User user, Integer code, String token, String type, LocalDateTime expiresAt) {
+        this.user = user;
+        this.code = code;
+        this.token = token;
+        this.type = type;
+        this.expiresAt = expiresAt;
     }
     
 }
