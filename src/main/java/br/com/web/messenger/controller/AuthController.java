@@ -2,7 +2,6 @@ package br.com.web.messenger.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,9 +12,10 @@ import br.com.web.messenger.dto.auth.LoginResponse;
 import br.com.web.messenger.dto.auth.EmailRequest;
 import br.com.web.messenger.dto.auth.VerifyEmailRequest;
 import br.com.web.messenger.dto.user.UserRegister;
+import br.com.web.messenger.exceptions.ConflictException;
+import br.com.web.messenger.exceptions.ResourceNotFoundException;
 import br.com.web.messenger.service.EmailCodeService;
 import br.com.web.messenger.service.UserService;
-import br.com.web.messenger.util.ValidationUtils;
 
 import jakarta.validation.Valid;
 
@@ -33,14 +33,9 @@ public class AuthController {
     
 
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody @Valid UserRegister dto, BindingResult bindingResult){
-        if (bindingResult.hasErrors()){
-            String errors = ValidationUtils.joinFieldErrors(bindingResult);
-            return ResponseEntity.badRequest().body(errors);
-        }
-
-        if (userService.emailExists(dto.email())){
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Email já cadastrado");
+    public ResponseEntity<Void> registerUser(@RequestBody @Valid UserRegister dto) {
+        if (userService.emailExists(dto.email())) {
+            throw new ConflictException("Usuário", "email", dto.email());
         }
 
         userService.createUser(dto);
@@ -48,7 +43,7 @@ public class AuthController {
         try {
             emailCodeService.createEmailVerificationForEmail(dto.email());
         } catch (IllegalArgumentException ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao enviar email de verificação");
+            throw new IllegalArgumentException("Erro ao enviar email de verificação", ex);
         }
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -56,42 +51,36 @@ public class AuthController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<Object> login(@RequestBody @Valid LoginRequest loginRequest, BindingResult bindingResult){
-        if (bindingResult.hasErrors()) {
-            String errors = ValidationUtils.joinFieldErrors(bindingResult);
-            return ResponseEntity.badRequest().body(errors);
-        }
-
+    public ResponseEntity<LoginResponse> login(@RequestBody @Valid LoginRequest loginRequest) {
         LoginResponse response = userService.generateToken(loginRequest);
-
         return ResponseEntity.ok(response);    
     }
 
 
     @PostMapping("/verify-email/{token}")
-    public ResponseEntity<String> verifyEmail(@RequestBody @Valid VerifyEmailRequest body, @PathVariable String token){
+    public ResponseEntity<Void> verifyEmail(@RequestBody @Valid VerifyEmailRequest body, @PathVariable String token) {
         int code;
         try {
             code = Integer.parseInt(body.code().trim());
         } catch (NumberFormatException ex) {
-            return ResponseEntity.badRequest().body("Formato de código inválido");
+            throw new IllegalArgumentException("Formato de código inválido");
         }
 
         boolean isVerified = emailCodeService.verifyEmailCode(token, code);
-        if (isVerified) {
-            return ResponseEntity.ok("Email verificado com sucesso");
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Código de verificação inválido");
+        if (!isVerified) {
+            throw new IllegalArgumentException("Código de verificação inválido");
         }
+
+        return ResponseEntity.ok().build();
     }
 
 
     @PostMapping("/verify-email/request")
-    public ResponseEntity<String> requestVerification(@RequestBody @Valid EmailRequest body){
+    public ResponseEntity<Void> requestVerification(@RequestBody @Valid EmailRequest body) {
         String email = body.email();
 
         if (!userService.emailExists(email)) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não encontrado");
+            throw new ResourceNotFoundException("Usuário", email);
         }
 
         emailCodeService.createEmailVerificationForEmail(email);
