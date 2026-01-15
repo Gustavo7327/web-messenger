@@ -3,6 +3,7 @@ package br.com.web.messenger.service;
 import java.time.Instant;
 import java.util.Optional;
 
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import br.com.web.messenger.dto.auth.LoginRequest;
 import br.com.web.messenger.dto.auth.LoginResponse;
 import br.com.web.messenger.dto.user.UserRegister;
+import br.com.web.messenger.dto.user.UserUpdate;
 import br.com.web.messenger.entity.User;
 import br.com.web.messenger.repository.UserRepository;
 
@@ -32,9 +34,9 @@ public class UserService {
     }
     
 
-    public void createUser(UserRegister dto){
+    public User createUser(UserRegister dto){
         User user = new User(dto, passwordEncoder);
-        userRepository.save(user);
+        return userRepository.save(user);
     }
 
 
@@ -68,6 +70,39 @@ public class UserService {
         String token = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
 
         return new LoginResponse(token, expirationTime);
+    }
+
+
+    public User updateUser(Long id, UserUpdate userUpdate, String authenticatedEmail) {
+        Optional<User> userOpt = userRepository.findById(id);
+        
+        if (userOpt.isEmpty()) {
+            throw new RuntimeException("Usuário não encontrado");
+        }
+        
+        User user = userOpt.get();
+        
+        if (!user.getEmail().equals(authenticatedEmail)) {
+            throw new AccessDeniedException("Você não tem permissão para atualizar este usuário");
+        }
+        
+        if (userUpdate.name() != null && !userUpdate.name().isBlank()) {
+            user.setName(userUpdate.name());
+        }
+        
+        if (userUpdate.password() != null && !userUpdate.password().isBlank()) {
+            user.setPassword(passwordEncoder.encode(userUpdate.password()));
+        }
+        
+        if (userUpdate.bio() != null && !userUpdate.bio().isBlank()) {
+            user.setBiography(userUpdate.bio());
+        }
+        
+        if (userUpdate.links() != null && !userUpdate.links().isEmpty()) {
+            user.setProfileLinks(userUpdate.links());
+        }
+        
+        return userRepository.save(user);
     }
 
 }
