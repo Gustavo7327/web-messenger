@@ -16,6 +16,7 @@ import br.com.web.messenger.dto.auth.LoginResponse;
 import br.com.web.messenger.dto.user.UserRegister;
 import br.com.web.messenger.dto.user.UserUpdate;
 import br.com.web.messenger.entity.User;
+import br.com.web.messenger.exceptions.ResourceNotFoundException;
 import br.com.web.messenger.repository.UserRepository;
 
 @Service
@@ -104,5 +105,32 @@ public class UserService {
         
         return userRepository.save(user);
     }
+
+
+    public User findById(Long id) {
+        User user = userRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
+        return user;
+    }
+
+    
+    public boolean isActiveUser(String email){
+        Optional<User> userOpt = findByEmail(email);
+        if(userOpt.isPresent() && !userOpt.get().isActive()){
+            return false;
+        }
+        return userOpt.get().isActive();
+    }
+
+    
+    public void deactivateUser(Long id, String authenticatedEmail) {
+        User user = findById(id);
+        if (!user.getEmail().equals(authenticatedEmail)) {
+            throw new AccessDeniedException("Você não tem permissão para desativar este usuário");     
+        }
+        user.setActive(false);
+        userRepository.save(user);
+    }
+
 
 }
