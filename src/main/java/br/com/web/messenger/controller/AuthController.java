@@ -52,6 +52,9 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody @Valid LoginRequest loginRequest) {
+        if(!userService.isActiveUser(loginRequest.email())){
+            throw new ResourceNotFoundException("Usuário ativo", loginRequest.email());
+        }
         LoginResponse response = userService.generateToken(loginRequest);
         return ResponseEntity.ok(response);    
     }
