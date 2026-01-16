@@ -69,4 +69,39 @@ public class EmailCodeService {
         return true;
     }
 
+
+    public void createActiveUserCode(String email) {
+        Optional<User> userOpt = userRepository.findByEmail(email);
+        if (userOpt.isEmpty()) {
+            throw new IllegalArgumentException("User not found for email: " + email);
+        }
+
+        User user = userOpt.get();
+        int code = new Random().nextInt(900000) + 100000; 
+        String token = UUID.randomUUID().toString();
+        LocalDateTime expiresAt = LocalDateTime.now().plusMinutes(15);
+
+        EmailCode emailCode = new EmailCode(user, code, token, "USER_ACTIVATION", expiresAt);
+        emailCodeRepository.save(emailCode);
+
+        emailService.sendActivationEmail(user, token, code, baseUrl);
+    }
+
+
+    public boolean verifyActiveUserCode(String token, int code) {
+        Optional<EmailCode> opt = emailCodeRepository.findByTokenAndCodeAndExpiresAtGreaterThan(token, code, LocalDateTime.now());
+        if (opt.isEmpty() || !opt.get().getType().equals("USER_ACTIVATION")) {
+            return false;
+        }
+
+        EmailCode emailCode = opt.get();
+        User user = emailCode.getUser();
+        user.setActive(true);
+        userRepository.save(user);
+
+        emailCodeRepository.delete(emailCode);
+
+        return true;
+    }
+
 }
