@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ativação de Conta - Web Messenger</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #ffffff;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+        
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px 30px;
+        }
+        
+        .greeting {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .message {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.8;
+        }
+        
+        .code-section {
+            background-color: #f9f9f9;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 30px 0;
+            border-radius: 4px;
+        }
+        
+        .code-label {
+            font-size: 12px;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+        
+        .code {
+            font-size: 36px;
+            font-weight: bold;
+            color: #667eea;
+            letter-spacing: 8px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .button-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #ffffff;
+            padding: 14px 40px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.6);
+        }
+        
+        .info {
+            background-color: #e8f4f8;
+            border-left: 4px solid #0084ff;
+            padding: 15px;
+            margin: 25px 0;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #0066cc;
+        }
+        
+        .footer {
+            background-color: #f5f5f5;
+            padding: 20px 30px;
+            text-align: center;
+            border-top: 1px solid #eeeeee;
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .footer p {
+            margin: 5px 0;
+        }
+        
+        .divider {
+            height: 1px;
+            background-color: #eeeeee;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎉 Bem-vindo ao Web Messenger</h1>
+            <p>Ative sua conta para começar</p>
+        </div>
+        
+        <div class="content">
+            <div class="greeting">
+                Olá <strong th:text="${userName}">Nome do Usuário</strong>!
+            </div>
+            
+            <div class="message">
+                Você está recebendo este email porque deseja reativar sua conta no Web Messenger. Por favor, use o código de ativação abaixo para confirmar sua identidade e reativar sua conta
+            </div>
+            
+            <div class="code-section">
+                <div class="code-label">Código de Ativação</div>
+                <div class="code" th:text="${code}">000000</div>
+            </div>
+            
+            <div class="button-container">
+                <a th:href="${activationLink}" class="button">Ativar Conta</a>
+            </div>
+            
+            <div class="divider"></div>
+            
+            <div class="info">
+                ℹ️ <strong>Não consegue clicar no botão?</strong> Copie e cole o código de ativação no seu navegador: <p th:text="${activationLink}">link de ativação</p>
+            </div>
+        
+            <div class="message">
+                Se você não solicitou a reativação de conta, ignore este email. Sua conta não será ativada sem confirmação.
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p><strong>Web Messenger</strong> - Plataforma de Mensagens Segura</p>
+            <p>© 2026 Web Messenger. Todos os direitos reservados.</p>
+            <p>Este é um email automático, por favor não responda.</p>
+        </div>
+    </div>
+</body>
+</html>
