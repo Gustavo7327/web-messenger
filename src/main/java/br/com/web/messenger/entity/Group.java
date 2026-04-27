@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 
-import jakarta.annotation.Nullable;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -28,7 +27,7 @@ public class Group {
 
     private String name;
 
-    @Nullable
+    @Column(nullable = true)
     private String photoUrl;
 
     @Column(columnDefinition = "TEXT", nullable = true)

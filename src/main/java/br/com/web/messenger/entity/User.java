@@ -17,7 +17,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.annotation.Nullable;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
@@ -42,10 +41,10 @@ public class User {
     @Column(columnDefinition = "TEXT", nullable = true)
     private String biography;
 
-    @Nullable
+    @Column(nullable = true)
     private String photoUrl;
 
-    @Nullable
+    @Column(nullable = true)
     private Boolean emailVerified;
  
     private Boolean active = true;
