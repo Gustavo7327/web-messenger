@@ -44,8 +44,7 @@ public class User {
     @Column(nullable = true)
     private String photoUrl;
 
-    @Column(nullable = true)
-    private Boolean emailVerified;
+    private Boolean emailVerified = false;
  
     private Boolean active = true;
 
