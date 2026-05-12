@@ -26,8 +26,6 @@ public class EmailCode {
 
     private Integer code;
 
-    private String token;
-
     private String type;
 
     private LocalDateTime expiresAt;
@@ -62,14 +60,6 @@ public class EmailCode {
         this.code = code;
     }
 
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
     public String getType() {
         return type;
     }
@@ -90,10 +80,9 @@ public class EmailCode {
         return createdAt;
     }
     
-    public EmailCode(User user, Integer code, String token, String type, LocalDateTime expiresAt) {
+    public EmailCode(User user, Integer code, String type, LocalDateTime expiresAt) {
         this.user = user;
         this.code = code;
-        this.token = token;
         this.type = type;
         this.expiresAt = expiresAt;
     }
