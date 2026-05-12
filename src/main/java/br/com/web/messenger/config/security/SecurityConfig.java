@@ -40,7 +40,7 @@ public class SecurityConfig {
 
         http
             .authorizeHttpRequests(authorize -> authorize
-            .requestMatchers(HttpMethod.POST, "/login", "/register", "/verify-email/{token}", "/verify-email/request", "/api/users/activate", "/api/users/activate/{token}").permitAll()
+            .requestMatchers(HttpMethod.POST, "/login", "/register", "/verify-email", "/verify-email/request", "/api/users/activate/request", "/api/users/activate").permitAll()
             .anyRequest().authenticated())
             .csrf(csfr -> csfr.disable())
             .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
