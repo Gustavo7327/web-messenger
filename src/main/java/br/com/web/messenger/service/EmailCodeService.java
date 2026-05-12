@@ -4,8 +4,10 @@ package br.com.web.messenger.service;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Random;
-import java.util.UUID;
 
+import br.com.web.messenger.config.rabbitmq.producer.EmailProducer;
+import br.com.web.messenger.constants.EmailType;
+import br.com.web.messenger.dto.email.EmailNotification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -14,6 +16,8 @@ import br.com.web.messenger.entity.EmailCode;
 import br.com.web.messenger.entity.User;
 import br.com.web.messenger.repository.EmailCodeRepository;
 import br.com.web.messenger.repository.UserRepository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class EmailCodeService {
@@ -23,18 +27,19 @@ public class EmailCodeService {
     private final UserRepository userRepository;
     
     @Autowired
-    private final EmailService emailService;
+    private final EmailProducer emailProducer;
     
     @Value("${app.base-url:http://localhost:8080}")
     private String baseUrl;
 
-    public EmailCodeService(EmailCodeRepository emailCodeRepository, UserRepository userRepository, EmailService emailService) {
+    public EmailCodeService(EmailCodeRepository emailCodeRepository, UserRepository userRepository, EmailProducer emailProducer) {
         this.emailCodeRepository = emailCodeRepository;
         this.userRepository = userRepository;
-        this.emailService = emailService;
+        this.emailProducer = emailProducer;
     }
-    
 
+
+    @Transactional(propagation = Propagation.REQUIRED)
     public void createEmailVerificationForEmail(String email) {
         Optional<User> userOpt = userRepository.findByEmail(email);
         if (userOpt.isEmpty()) {
@@ -42,19 +47,18 @@ public class EmailCodeService {
         }
 
         User user = userOpt.get();
-        int code = new Random().nextInt(900000) + 100000; 
-        String token = UUID.randomUUID().toString();
+        int code = new Random().nextInt(900000) + 100000;
         LocalDateTime expiresAt = LocalDateTime.now().plusMinutes(15);
 
-        EmailCode emailCode = new EmailCode(user, code, token, "EMAIL_VERIFICATION", expiresAt);
+        EmailCode emailCode = new EmailCode(user, code, EmailType.EMAIL_VERIFICATION.name(), expiresAt);
         emailCodeRepository.save(emailCode);
 
-        emailService.sendVerificationEmail(user, token, code, baseUrl);
+        emailProducer.sendEmailTask(new EmailNotification(email, user.getName(), code, EmailType.EMAIL_VERIFICATION));
     }
 
 
-    public boolean verifyEmailCode(String token, int code) {
-        Optional<EmailCode> opt = emailCodeRepository.findByTokenAndCodeAndExpiresAtGreaterThan(token, code, LocalDateTime.now());
+    public boolean verifyEmailCode(String email, int code) {
+        Optional<EmailCode> opt = emailCodeRepository.findByUserEmailAndCodeAndExpiresAtGreaterThan(email, code, LocalDateTime.now());
         if (opt.isEmpty()) {
             return false;
         }
@@ -77,20 +81,19 @@ public class EmailCodeService {
         }
 
         User user = userOpt.get();
-        int code = new Random().nextInt(900000) + 100000; 
-        String token = UUID.randomUUID().toString();
+        int code = new Random().nextInt(900000) + 100000;
         LocalDateTime expiresAt = LocalDateTime.now().plusMinutes(15);
 
-        EmailCode emailCode = new EmailCode(user, code, token, "USER_ACTIVATION", expiresAt);
+        EmailCode emailCode = new EmailCode(user, code, EmailType.EMAIL_ACTIVATION.name(), expiresAt);
         emailCodeRepository.save(emailCode);
 
-        emailService.sendActivationEmail(user, token, code, baseUrl);
+        emailProducer.sendEmailTask(new EmailNotification(email, user.getName(), code, EmailType.EMAIL_ACTIVATION));
     }
 
 
-    public boolean verifyActiveUserCode(String token, int code) {
-        Optional<EmailCode> opt = emailCodeRepository.findByTokenAndCodeAndExpiresAtGreaterThan(token, code, LocalDateTime.now());
-        if (opt.isEmpty() || !opt.get().getType().equals("USER_ACTIVATION")) {
+    public boolean verifyActiveUserCode(String email, int code) {
+        Optional<EmailCode> opt = emailCodeRepository.findByUserEmailAndCodeAndExpiresAtGreaterThan(email, code, LocalDateTime.now());
+        if (opt.isEmpty() || !opt.get().getType().equals("EMAIL_ACTIVATION")) {
             return false;
         }
 

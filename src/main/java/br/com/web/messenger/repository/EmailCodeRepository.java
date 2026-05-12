@@ -11,6 +11,6 @@ import br.com.web.messenger.entity.EmailCode;
 @Repository
 public interface EmailCodeRepository extends JpaRepository<EmailCode, Long>{
 
-    Optional<EmailCode> findByTokenAndCodeAndExpiresAtGreaterThan(String token, int code, LocalDateTime now);
+    Optional<EmailCode> findByUserEmailAndCodeAndExpiresAtGreaterThan(String email, int code, LocalDateTime now);
     
 }

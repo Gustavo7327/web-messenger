@@ -56,22 +56,22 @@ public class UserController {
     }
 
 
-    @PostMapping("/activate")
+    @PostMapping("/activate/request")
     public ResponseEntity<Void> activateUser(@RequestBody EmailRequest request) {
         emailCodeService.createActiveUserCode(request.email());
         return ResponseEntity.noContent().build();
     }
 
 
-    @PostMapping("/activate/{token}")
-    public ResponseEntity<Void> verifyActivateUser(@RequestBody @Valid VerifyEmailRequest body, @PathVariable String token) {
+    @PostMapping("/activate")
+    public ResponseEntity<Void> verifyActivateUser(@RequestBody @Valid VerifyEmailRequest body) {
         int code;
         try {
             code = Integer.parseInt(body.code().trim());
         } catch (NumberFormatException ex) {
             throw new IllegalArgumentException("Formato de código inválido");
         }
-        boolean isVerified = emailCodeService.verifyActiveUserCode(token, code);
+        boolean isVerified = emailCodeService.verifyActiveUserCode(body.email(), code);
 
         if (!isVerified) {
             throw new IllegalArgumentException("Código de verificação inválido");

@@ -22,18 +22,17 @@ public class EmailService {
         this.templateEngine = templateEngine;
     }
 
-    public void sendVerificationEmail(User user, String token, int code, String baseUrl) {
+    public void sendVerificationEmail(String email, String userName, int code) {
         try {
             MimeMessage message = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
             
-            helper.setTo(user.getEmail());
+            helper.setTo(email);
             helper.setSubject("Verificação de Email - Web Messenger");
             
             Context context = new Context();
-            context.setVariable("userName", user.getName());
+            context.setVariable("userName", userName);
             context.setVariable("code", String.format("%06d", code));
-            context.setVariable("verificationLink", baseUrl + "/verify-email/" + token);
             
             String htmlContent = templateEngine.process("email-verification", context);
             
@@ -46,18 +45,17 @@ public class EmailService {
         }
     }
 
-    public void sendActivationEmail(User user, String token, int code, String baseUrl) {
+    public void sendActivationEmail(String email, String userName, int code) {
         try {
             MimeMessage message = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
             
-            helper.setTo(user.getEmail());
+            helper.setTo(email);
             helper.setSubject("Ativação de Conta - Web Messenger");
             
             Context context = new Context();
-            context.setVariable("userName", user.getName());
+            context.setVariable("userName", userName);
             context.setVariable("code", String.format("%06d", code));
-            context.setVariable("activationLink", baseUrl + "/api/users/activate/" + token);
             
             String htmlContent = templateEngine.process("account-activation", context);
             

@@ -2,7 +2,6 @@ package br.com.web.messenger.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,15 +36,7 @@ public class AuthController {
         if (userService.emailExists(dto.email())) {
             throw new ConflictException("Usuário", "email", dto.email());
         }
-
         userService.createUser(dto);
-
-        try {
-            emailCodeService.createEmailVerificationForEmail(dto.email());
-        } catch (IllegalArgumentException ex) {
-            throw new IllegalArgumentException("Erro ao enviar email de verificação", ex);
-        }
-
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -53,15 +44,20 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody @Valid LoginRequest loginRequest) {
         if(!userService.isActiveUser(loginRequest.email())){
-            throw new ResourceNotFoundException("Usuário ativo", loginRequest.email());
+            throw new ResourceNotFoundException("Usuário inativo", loginRequest.email());
         }
+
+        if (!userService.isEmailVerified(loginRequest.email())) {
+            throw new ResourceNotFoundException("Email não verificado", loginRequest.email());
+        }
+
         LoginResponse response = userService.generateToken(loginRequest);
         return ResponseEntity.ok(response);    
     }
 
 
-    @PostMapping("/verify-email/{token}")
-    public ResponseEntity<Void> verifyEmail(@RequestBody @Valid VerifyEmailRequest body, @PathVariable String token) {
+    @PostMapping("/verify-email")
+    public ResponseEntity<Void> verifyEmail(@RequestBody @Valid VerifyEmailRequest body) {
         int code;
         try {
             code = Integer.parseInt(body.code().trim());
@@ -69,7 +65,7 @@ public class AuthController {
             throw new IllegalArgumentException("Formato de código inválido");
         }
 
-        boolean isVerified = emailCodeService.verifyEmailCode(token, code);
+        boolean isVerified = emailCodeService.verifyEmailCode(body.email(), code);
         if (!isVerified) {
             throw new IllegalArgumentException("Código de verificação inválido");
         }

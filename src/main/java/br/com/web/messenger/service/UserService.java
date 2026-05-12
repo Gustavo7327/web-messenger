@@ -18,6 +18,7 @@ import br.com.web.messenger.dto.user.UserUpdate;
 import br.com.web.messenger.entity.User;
 import br.com.web.messenger.exceptions.ResourceNotFoundException;
 import br.com.web.messenger.repository.UserRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserService {
@@ -28,18 +29,21 @@ public class UserService {
 
     private final JwtEncoder jwtEncoder;
 
-    public UserService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, JwtEncoder jwtEncoder){
+    private final EmailCodeService emailCodeService;
+
+    public UserService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, JwtEncoder jwtEncoder, EmailCodeService emailCodeService){
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtEncoder = jwtEncoder;
+        this.emailCodeService = emailCodeService;
     }
     
-
-    public User createUser(UserRegister dto){
+    @Transactional
+    public void createUser(UserRegister dto){
         User user = new User(dto, passwordEncoder);
-        return userRepository.save(user);
+        userRepository.save(user);
+        emailCodeService.createEmailVerificationForEmail(dto.email());
     }
-
 
     public Optional<User> findByEmail(String email){
         return userRepository.findByEmail(email);
@@ -119,7 +123,16 @@ public class UserService {
         if(userOpt.isPresent() && !userOpt.get().isActive()){
             return false;
         }
-        return userOpt.get().isActive();
+        return userOpt.isPresent() && userOpt.get().isActive();
+    }
+
+
+    public boolean isEmailVerified(String email) {
+        Optional<User> userOpt = findByEmail(email);
+        if(userOpt.isPresent() && !userOpt.get().isEmailVerified()) {
+            return false;
+        }
+        return userOpt.isPresent() && userOpt.get().isEmailVerified();
     }
 
     
