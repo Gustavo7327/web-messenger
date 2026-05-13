@@ -57,7 +57,7 @@ public class UserController {
 
 
     @PostMapping("/activate/request")
-    public ResponseEntity<Void> activateUser(@RequestBody EmailRequest request) {
+    public ResponseEntity<Void> activateUser(@RequestBody @Valid EmailRequest request) {
         emailCodeService.createActiveUserCode(request.email());
         return ResponseEntity.noContent().build();
     }
