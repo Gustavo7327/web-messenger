@@ -22,7 +22,7 @@ import jakarta.persistence.UniqueConstraint;
 
 @Entity
 @Table(name = "users", uniqueConstraints = {
-    @UniqueConstraint(columnNames = "email")
+    @UniqueConstraint(columnNames = {"email", "username"})
 })
 public class User {
     
@@ -43,6 +43,8 @@ public class User {
 
     @Column(nullable = true)
     private String photoUrl;
+
+    private String username;
 
     private Boolean emailVerified = false;
  
@@ -110,6 +112,14 @@ public class User {
 
     public void setPhotoUrl(String photoUrl) {
         this.photoUrl = photoUrl;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public Boolean isEmailVerified() {
