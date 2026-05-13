@@ -112,9 +112,8 @@ public class UserService {
 
 
     public User findById(Long id) {
-        User user = userRepository.findById(id)
+        return userRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
-        return user;
     }
 
     
