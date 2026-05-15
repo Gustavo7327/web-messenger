@@ -3,6 +3,7 @@ package br.com.web.messenger.service;
 import java.time.Instant;
 import java.util.Optional;
 
+import br.com.web.messenger.dto.user.UserResponse;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -78,7 +79,7 @@ public class UserService {
     }
 
 
-    public User updateUser(Long id, UserUpdate userUpdate, String authenticatedEmail) {
+    public UserResponse updateUser(Long id, UserUpdate userUpdate, String authenticatedEmail) {
         Optional<User> userOpt = userRepository.findById(id);
         
         if (userOpt.isEmpty()) {
@@ -107,13 +108,17 @@ public class UserService {
             user.setProfileLinks(userUpdate.links());
         }
         
-        return userRepository.save(user);
+        userRepository.save(user);
+        return UserResponse.from(user);
     }
 
 
-    public User findById(Long id) {
-        return userRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
+    public UserResponse findById(Long id) {
+        Optional<User> user = userRepository.findById(id);
+        if (user.isEmpty()) {
+            throw new ResourceNotFoundException("Usuário não encontrado");
+        }
+        return UserResponse.from(user.get());
     }
 
     
@@ -136,13 +141,13 @@ public class UserService {
 
     
     public void deactivateUser(Long id, String authenticatedEmail) {
-        User user = findById(id);
-        if (!user.getEmail().equals(authenticatedEmail)) {
-            throw new AccessDeniedException("Você não tem permissão para desativar este usuário");     
-        }
-        user.setActive(false);
-        userRepository.save(user);
+        Optional<User> user = userRepository.findById(id);
+        user.ifPresent(userOpt -> {
+            if (!userOpt.getEmail().equals(authenticatedEmail)) {
+                throw new AccessDeniedException("Você não tem permissão para desativar este usuário");
+            }
+            userOpt.setActive(false);
+            userRepository.save(userOpt);
+        });
     }
-
-
 }

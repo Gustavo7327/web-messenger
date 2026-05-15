@@ -62,6 +62,7 @@ public class User {
 
     public User(UserRegister dto, BCryptPasswordEncoder passwordEncoder) {
         this.name = dto.name();
+        this.username = dto.username();
         this.email = dto.email();
         this.password = passwordEncoder.encode(dto.password());
     }

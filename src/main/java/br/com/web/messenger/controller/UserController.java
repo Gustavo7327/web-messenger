@@ -1,5 +1,6 @@
 package br.com.web.messenger.controller;
 
+import br.com.web.messenger.dto.user.UserResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.web.messenger.dto.auth.EmailRequest;
 import br.com.web.messenger.dto.auth.VerifyEmailRequest;
 import br.com.web.messenger.dto.user.UserUpdate;
-import br.com.web.messenger.entity.User;
 import br.com.web.messenger.service.EmailCodeService;
 import br.com.web.messenger.service.UserService;
 import jakarta.validation.Valid;
@@ -32,19 +32,19 @@ public class UserController {
     }
     
     @PatchMapping("/{id}")
-    public ResponseEntity<User> updateUser(
+    public ResponseEntity<UserResponse> updateUser(
             @PathVariable Long id,
             @Valid @RequestBody UserUpdate userUpdate,
             Authentication authentication) {
         
-        User updatedUser = userService.updateUser(id, userUpdate, authentication.getName());
+        UserResponse updatedUser = userService.updateUser(id, userUpdate, authentication.getName());
         return ResponseEntity.ok(updatedUser);
     }
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id, Authentication authentication) {
-        User user = userService.findById(id);
+    public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
+        UserResponse user = userService.findById(id);
         return ResponseEntity.ok(user);
     }
 
