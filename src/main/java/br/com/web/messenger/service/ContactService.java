@@ -1,5 +1,7 @@
 package br.com.web.messenger.service;
 
+import br.com.web.messenger.dto.contact.ContactListResponse;
+import br.com.web.messenger.dto.contact.ContactResponse;
 import br.com.web.messenger.dto.contact.SaveContact;
 import br.com.web.messenger.entity.Contact;
 import br.com.web.messenger.entity.User;
@@ -28,34 +30,42 @@ public class ContactService {
         return contactRepository.findById(id);
     }
 
-    public List<Contact> findAll(Authentication authentication) {
+    public ContactListResponse findAll(Authentication authentication) {
         String email = authentication.getName();
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
-        return contactRepository.findAllByOwnerId(user.getId());
+        List<ContactResponse> contacts = contactRepository.findContactResponsesByOwnerEmail(email);
+        return new ContactListResponse(contacts);
     }
 
-    public Contact update(Long id, String nickname) {
-        Optional<Contact> contact = contactRepository.findById(id);
-        if (contact.isEmpty()) {
+    public ContactResponse update(Long id, String nickname) {
+        Optional<Contact> contactOpt = contactRepository.findById(id);
+        if (contactOpt.isEmpty()) {
             throw new ResourceNotFoundException("Contact not found");
         }
-        contact.get().setNickname(nickname);
-        return contactRepository.save(contact.get());
+        Contact contact = contactOpt.get();
+        contact.setNickname(nickname);
+        contactRepository.save(contact);
+        return ContactResponse.from(contact);
     }
 
-    public Contact save(SaveContact dto, Authentication authentication) {
+    public ContactResponse save(SaveContact dto, Authentication authentication) {
         Optional<User> user = userRepository.findByUsername(dto.username());
 
         if (user.isEmpty()) {
            throw new ResourceNotFoundException("username", dto.username());
         }
 
+        Optional<User> owner = userRepository.findByEmail(authentication.getName());
+        if (owner.isEmpty()) {
+            throw new ResourceNotFoundException("email", authentication.getName());
+        }
+
         Contact contact = new Contact();
         contact.setNickname(dto.nickname());
         contact.setContact(user.get());
-        contact.setOwner((User) authentication.getPrincipal());
+        contact.setOwner(owner.get());
 
-        return contactRepository.save(contact);
+        contactRepository.save(contact);
+        return ContactResponse.from(contact);
     }
 
     public void delete(Long id) {
