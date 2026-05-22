@@ -26,7 +26,10 @@ public interface GroupRepository extends JpaRepository<Group, Long>{
 
     @Query("""
         SELECT new br.com.web.messenger.dto.group.GroupMemberDTO(
-            m.id, u.name, u.photoUrl, m.role
+            u.id,
+            u.name,
+            u.photoUrl,
+            STR(m.role)
         )
         FROM GroupMember m
         JOIN m.user u
