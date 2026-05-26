@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "messages")
 public class Message {
@@ -20,7 +21,8 @@ public class Message {
 
 	private String content;
 
-	private Boolean message_read = false;
+	@Field("message_read")
+	private Boolean messageRead = false;
 
 	@CreatedDate
 	private LocalDateTime createdAt;
@@ -65,11 +67,11 @@ public class Message {
 	}
 
 	public Boolean getMessageRead() {
-		return message_read;
+		return messageRead;
 	}
 
-	public void setMessageRead(Boolean message_read) {
-		this.message_read = message_read;
+	public void setMessageRead(Boolean messageRead) {
+		this.messageRead = messageRead;
 	}
 
 	public Long getGroupId() {
@@ -78,5 +80,9 @@ public class Message {
 
 	public void setGroupId(Long groupId) {
 		this.groupId = groupId;
+	}
+
+	public void setCreatedAt(LocalDateTime now) {
+		this.createdAt = now;
 	}
 }
