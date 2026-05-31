@@ -49,8 +49,9 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests(authorize -> authorize
             .requestMatchers(HttpMethod.POST, "/login", "/register", "/verify-email", "/verify-email/request", "/api/users/activate/request", "/api/users/activate").permitAll()
+            .requestMatchers("/ws").permitAll()
             .anyRequest().authenticated())
-                .cors(cors -> corsConfigurationSource())
+            .cors(cors -> corsConfigurationSource())
             .csrf(csfr -> csfr.disable())
             .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
