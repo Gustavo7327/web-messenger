@@ -14,8 +14,8 @@ import org.springframework.stereotype.Service;
 
 import br.com.web.messenger.entity.EmailCode;
 import br.com.web.messenger.entity.User;
-import br.com.web.messenger.repository.EmailCodeRepository;
-import br.com.web.messenger.repository.UserRepository;
+import br.com.web.messenger.repository.jpa.EmailCodeRepository;
+import br.com.web.messenger.repository.jpa.UserRepository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 

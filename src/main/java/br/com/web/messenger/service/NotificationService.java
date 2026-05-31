@@ -2,7 +2,7 @@ package br.com.web.messenger.service;
 
 import br.com.web.messenger.entity.Notification;
 import br.com.web.messenger.entity.User;
-import br.com.web.messenger.repository.NotificationRepository;
+import br.com.web.messenger.repository.jpa.NotificationRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;

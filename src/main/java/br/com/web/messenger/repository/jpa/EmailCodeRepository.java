@@ -1,4 +1,4 @@
-package br.com.web.messenger.repository;
+package br.com.web.messenger.repository.jpa;
 
 import java.time.LocalDateTime;
 import java.util.Optional;

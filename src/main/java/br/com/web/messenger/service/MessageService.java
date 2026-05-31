@@ -1,7 +1,7 @@
 package br.com.web.messenger.service;
 
 import br.com.web.messenger.entity.Message;
-import br.com.web.messenger.repository.MessageRepository;
+import br.com.web.messenger.repository.mongo.MessageRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;

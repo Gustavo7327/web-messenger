@@ -18,7 +18,7 @@ import br.com.web.messenger.dto.user.UserRegister;
 import br.com.web.messenger.dto.user.UserUpdate;
 import br.com.web.messenger.entity.User;
 import br.com.web.messenger.exceptions.ResourceNotFoundException;
-import br.com.web.messenger.repository.UserRepository;
+import br.com.web.messenger.repository.jpa.UserRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service

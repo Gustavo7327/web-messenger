@@ -1,4 +1,4 @@
-package br.com.web.messenger.repository;
+package br.com.web.messenger.repository.jpa;
 
 import br.com.web.messenger.dto.group.GroupInfoDTO;
 import br.com.web.messenger.dto.group.GroupMemberDTO;

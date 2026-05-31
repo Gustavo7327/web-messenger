@@ -1,4 +1,4 @@
-package br.com.web.messenger.repository;
+package br.com.web.messenger.repository.mongo;
 
 import br.com.web.messenger.entity.Message;
 import org.springframework.data.domain.Page;

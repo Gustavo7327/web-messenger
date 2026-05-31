@@ -1,4 +1,4 @@
-package br.com.web.messenger.repository;
+package br.com.web.messenger.repository.jpa;
 
 import java.util.List;
 import java.util.Optional;

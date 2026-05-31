@@ -6,8 +6,8 @@ import br.com.web.messenger.dto.contact.SaveContact;
 import br.com.web.messenger.entity.Contact;
 import br.com.web.messenger.entity.User;
 import br.com.web.messenger.exceptions.ResourceNotFoundException;
-import br.com.web.messenger.repository.ContactRepository;
-import br.com.web.messenger.repository.UserRepository;
+import br.com.web.messenger.repository.jpa.ContactRepository;
+import br.com.web.messenger.repository.jpa.UserRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
