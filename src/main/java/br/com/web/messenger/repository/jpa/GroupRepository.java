@@ -2,6 +2,7 @@ package br.com.web.messenger.repository.jpa;
 
 import br.com.web.messenger.dto.group.GroupInfoDTO;
 import br.com.web.messenger.dto.group.GroupMemberDTO;
+import br.com.web.messenger.dto.group.GroupResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import br.com.web.messenger.entity.Group;
@@ -36,4 +37,14 @@ public interface GroupRepository extends JpaRepository<Group, Long>{
         WHERE m.group.id = :groupId
     """)
     List<GroupMemberDTO> findGroupMembersById(@Param("groupId") Long groupId);
+
+    @Query("""
+        SELECT new br.com.web.messenger.dto.group.GroupResponse(
+            g.name, g.description, g.photoUrl
+        )
+        FROM Group g
+        JOIN g.members m
+        WHERE m.user.id = :userId
+    """)
+    List<GroupResponse> findAllGroupsByUserId(@Param("userId") Long userId);
 }

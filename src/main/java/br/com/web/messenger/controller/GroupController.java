@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/groups")
 public class GroupController {
@@ -46,5 +48,11 @@ public class GroupController {
     public ResponseEntity<GroupDetailsResponse> getGroupDetails(@PathVariable Long id) {
         GroupDetailsResponse response = groupService.getGroupDetails(id);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<GroupResponse>> getAllGroups(Authentication authentication) {
+        List<GroupResponse> groups = groupService.getAllGroups(authentication);
+        return ResponseEntity.ok(groups);
     }
 }

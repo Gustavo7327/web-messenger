@@ -80,4 +80,8 @@ public class GroupService {
         return new GroupDetailsResponse(groupInfo, members);
     }
 
+    public List<GroupResponse> getAllGroups(Authentication authentication) {
+        User user = userRepository.findByEmail(authentication.getName()).orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
+        return groupRepository.findAllGroupsByUserId(user.getId());
+    }
 }
