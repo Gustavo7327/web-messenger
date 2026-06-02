@@ -21,7 +21,7 @@ public class ContactController {
         this.contactService = contactService;
     }
 
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<ContactListResponse> findAll(Authentication authentication) {
         return ResponseEntity.ok(contactService.findAll(authentication));
     }
@@ -31,7 +31,7 @@ public class ContactController {
         return ResponseEntity.ok(contactService.update(id, dto.nickname()));
     }
 
-    @PostMapping("/")
+    @PostMapping
     public ResponseEntity<ContactResponse> save(@Valid @RequestBody SaveContact dto, Authentication authentication) {
         return ResponseEntity.ok(contactService.save(dto, authentication));
     }
