@@ -22,4 +22,7 @@ public interface MessageRepository extends MongoRepository<Message, String> {
 
     @Query("{ 'recipientId': ?0, 'message_read': false }")
     long countUnreadMessagesByRecipient(Long recipientId);
+
+    @Query("{ 'recipientId': ?0, 'message_read': false }")
+    List<Message> findUnreadMessagesByRecipient(Long recipientId);
 }
