@@ -1,0 +1,38 @@
+# Postgres
+spring.datasource.url=jdbc:postgresql://localhost:5432/messenger_auth_db
+spring.datasource.username=your_username
+spring.datasource.password=your_password
+
+# MongoDB
+spring.data.mongodb.host=localhost
+spring.data.mongodb.port=27017
+spring.data.mongodb.database=messenger_chat_db
+spring.data.mongodb.username=your_username
+spring.data.mongodb.password=your_password
+spring.data.mongodb.authentication-database=admin
+
+# Redis
+spring.data.redis.host=localhost
+spring.data.redis.port=6379
+
+# JWT Keys
+jwt.public.key=your_path
+jwt.private.key=your_path
+
+# Email Configuration
+spring.mail.host=localhost
+spring.mail.port=1025
+spring.mail.username=dummy
+spring.mail.password=dummy
+spring.mail.properties.mail.smtp.auth=false
+spring.mail.properties.mail.smtp.starttls.enable=false
+
+# RabbitMQ Configuration
+spring.rabbitmq.host=localhost
+spring.rabbitmq.port=5672
+spring.rabbitmq.username=your_username
+spring.rabbitmq.password=your_password
+
+# Application Base URL
+app.base-url=http://localhost:8080
+app.allowed.origins=http://localhost:4200
