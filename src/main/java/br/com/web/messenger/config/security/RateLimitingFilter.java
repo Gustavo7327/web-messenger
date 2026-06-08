@@ -13,7 +13,7 @@ import java.time.Duration;
 public class RateLimitingFilter implements Filter {
 
     private final StringRedisTemplate redisTemplate;
-    private static final int LIMIT = 10;
+    private static final int LIMIT = 30;
     private static final long WINDOW_DURATION = 60;
 
     public RateLimitingFilter(StringRedisTemplate redisTemplate) {
