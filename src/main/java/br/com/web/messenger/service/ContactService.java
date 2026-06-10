@@ -36,11 +36,17 @@ public class ContactService {
         return new ContactListResponse(contacts);
     }
 
-    public ContactResponse update(Long id, String nickname) {
+    public ContactResponse update(Long id, String nickname, Authentication authentication) {
         Optional<Contact> contactOpt = contactRepository.findById(id);
+
         if (contactOpt.isEmpty()) {
             throw new ResourceNotFoundException("Contact not found");
         }
+
+        if (!contactOpt.get().getOwner().getEmail().equals(authentication.getName())) {
+            throw new IllegalArgumentException("Você não tem permissão para atualizar o contato");
+        }
+
         Contact contact = contactOpt.get();
         contact.setNickname(nickname);
         contactRepository.save(contact);
@@ -68,11 +74,17 @@ public class ContactService {
         return ContactResponse.from(contact);
     }
 
-    public void delete(Long id) {
+    public void delete(Long id, Authentication authentication) {
         Optional<Contact> contact = contactRepository.findById(id);
+
         if (contact.isEmpty()) {
             throw new ResourceNotFoundException("Contact not found");
         }
+
+        if (!contact.get().getOwner().getEmail().equals(authentication.getName())) {
+            throw new IllegalArgumentException("Você não tem permissão para atualizar o contato");
+        }
+
         contactRepository.delete(contact.get());
     }
 }

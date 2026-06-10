@@ -27,8 +27,8 @@ public class ContactController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ContactResponse> update(@PathVariable Long id, @Valid @RequestBody UpdateContact dto) {
-        return ResponseEntity.ok(contactService.update(id, dto.nickname()));
+    public ResponseEntity<ContactResponse> update(@PathVariable Long id, @Valid @RequestBody UpdateContact dto, Authentication authentication) {
+        return ResponseEntity.ok(contactService.update(id, dto.nickname(), authentication));
     }
 
     @PostMapping
@@ -37,8 +37,8 @@ public class ContactController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        contactService.delete(id);
+    public ResponseEntity<Void> delete(@PathVariable Long id, Authentication authentication) {
+        contactService.delete(id, authentication);
         return ResponseEntity.noContent().build();
     }
 }
