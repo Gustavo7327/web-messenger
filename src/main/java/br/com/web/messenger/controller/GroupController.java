@@ -45,8 +45,8 @@ public class GroupController {
     }
 
     @GetMapping("/{id}/details")
-    public ResponseEntity<GroupDetailsResponse> getGroupDetails(@PathVariable Long id) {
-        GroupDetailsResponse response = groupService.getGroupDetails(id);
+    public ResponseEntity<GroupDetailsResponse> getGroupDetails(@PathVariable Long id, Authentication authentication) {
+        GroupDetailsResponse response = groupService.getGroupDetails(id, authentication);
         return ResponseEntity.ok(response);
     }
 

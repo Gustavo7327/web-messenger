@@ -71,7 +71,13 @@ public class GroupService {
     }
 
     @Transactional(readOnly = true)
-    public GroupDetailsResponse getGroupDetails(Long groupId) {
+    public GroupDetailsResponse getGroupDetails(Long groupId, Authentication authentication) {
+        boolean isMember = groupRepository.isUserMemberOfGroup(groupId, authentication.getName());
+
+        if (!isMember) {
+            throw new AccessDeniedException("Você não tem permissão para visualizar as informações deste grupo.");
+        }
+
         GroupInfoDTO groupInfo = groupRepository.findGroupInfoById(groupId)
                 .orElseThrow(() -> new ResourceNotFoundException("Grupo não encontrado"));
 
