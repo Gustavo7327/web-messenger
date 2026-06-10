@@ -47,4 +47,12 @@ public interface GroupRepository extends JpaRepository<Group, Long>{
         WHERE m.user.id = :userId
     """)
     List<GroupResponse> findAllGroupsByUserId(@Param("userId") Long userId);
+
+    @Query("""
+        SELECT COUNT(m) > 0
+        FROM GroupMember m
+        WHERE m.group.id = :groupId
+        AND m.user.email = :email
+    """)
+    boolean isUserMemberOfGroup(@Param("groupId") Long groupId, @Param("email") String email);
 }
