@@ -67,4 +67,27 @@ public class EmailService {
             throw new RuntimeException("Erro ao enviar email de ativação: " + ex.getMessage(), ex);
         }
     }
+
+    public void sendForgotPasswordEmail(String email, String userName, int code) {
+        try {
+            MimeMessage message = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setTo(email);
+            helper.setSubject("Esqueceu a senha - Web Messenger");
+
+            Context context = new Context();
+            context.setVariable("userName", userName);
+            context.setVariable("code", String.format("%06d", code));
+
+            String htmlContent = templateEngine.process("account-activation", context);
+
+            helper.setText(htmlContent, true);
+
+            javaMailSender.send(message);
+
+        } catch (MessagingException ex) {
+            throw new RuntimeException("Erro ao enviar email de ativação: " + ex.getMessage(), ex);
+        }
+    }
 }
