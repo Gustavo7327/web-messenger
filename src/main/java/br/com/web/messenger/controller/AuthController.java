@@ -1,15 +1,12 @@
 package br.com.web.messenger.controller;
 
+import br.com.web.messenger.dto.auth.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.web.messenger.dto.auth.LoginRequest;
-import br.com.web.messenger.dto.auth.LoginResponse;
-import br.com.web.messenger.dto.auth.EmailRequest;
-import br.com.web.messenger.dto.auth.VerifyEmailRequest;
 import br.com.web.messenger.dto.user.UserRegister;
 import br.com.web.messenger.exceptions.ConflictException;
 import br.com.web.messenger.exceptions.ResourceNotFoundException;
@@ -85,5 +82,35 @@ public class AuthController {
         emailCodeService.createEmailVerificationForEmail(email);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PostMapping("/forgot-password/request")
+    public ResponseEntity<Void> forgotPasswordRequest(@RequestBody @Valid EmailRequest body) {
+        String email = body.email();
+
+        if (!userService.emailExists(email)) {
+            throw new ResourceNotFoundException("Usuário", email);
+        }
+
+        emailCodeService.createPasswordResetEmail(email);
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<Void> forgotPassword(@RequestBody @Valid ForgotPasswordRequest body) {
+        int code;
+        try {
+            code = Integer.parseInt(body.code().trim());
+        } catch (NumberFormatException ex) {
+            throw new IllegalArgumentException("Formato de código inválido");
+        }
+
+        boolean isVerified = emailCodeService.verifyPasswordResetEmailCode(body.email(), code, body.newPassword());
+        if (!isVerified) {
+            throw new IllegalArgumentException("Código de verificação inválido");
+        }
+
+        return ResponseEntity.ok().build();
     }
 }
