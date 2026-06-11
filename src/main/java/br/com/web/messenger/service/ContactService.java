@@ -8,6 +8,7 @@ import br.com.web.messenger.entity.User;
 import br.com.web.messenger.exceptions.ResourceNotFoundException;
 import br.com.web.messenger.repository.jpa.ContactRepository;
 import br.com.web.messenger.repository.jpa.UserRepository;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -44,7 +45,7 @@ public class ContactService {
         }
 
         if (!contactOpt.get().getOwner().getEmail().equals(authentication.getName())) {
-            throw new IllegalArgumentException("Você não tem permissão para atualizar o contato");
+            throw new AccessDeniedException("Você não tem permissão para atualizar o contato");
         }
 
         Contact contact = contactOpt.get();
@@ -82,7 +83,7 @@ public class ContactService {
         }
 
         if (!contact.get().getOwner().getEmail().equals(authentication.getName())) {
-            throw new IllegalArgumentException("Você não tem permissão para atualizar o contato");
+            throw new AccessDeniedException("Você não tem permissão para atualizar o contato");
         }
 
         contactRepository.delete(contact.get());
