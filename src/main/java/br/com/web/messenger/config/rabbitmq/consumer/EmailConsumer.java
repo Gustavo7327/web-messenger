@@ -1,7 +1,6 @@
 package br.com.web.messenger.config.rabbitmq.consumer;
 
 import br.com.web.messenger.config.rabbitmq.RabbitMQConfig;
-import br.com.web.messenger.constants.EmailType;
 import br.com.web.messenger.dto.email.EmailNotification;
 import br.com.web.messenger.service.EmailService;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -23,6 +22,7 @@ public class EmailConsumer {
             switch (dto.emailType()) {
                 case EMAIL_VERIFICATION -> emailService.sendVerificationEmail(dto.toEmail(), dto.userName(), dto.code());
                 case EMAIL_ACTIVATION -> emailService.sendActivationEmail(dto.toEmail(), dto.userName(), dto.code());
+                case EMAIL_FORGOT_PASSWORD -> emailService.sendForgotPasswordEmail(dto.toEmail(), dto.userName(), dto.code());
             }
         } catch (Exception e) {
             throw new RuntimeException("Erro ao processar email: " + e.getMessage(), e);
